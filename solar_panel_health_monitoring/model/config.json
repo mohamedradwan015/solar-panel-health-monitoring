@@ -1,0 +1,25 @@
+{
+  "detector": {
+    "current_softening_mA": 4.66,
+    "feature_set": "abs",
+    "k": 20,
+    "level": "channel",
+    "max_reference": null,
+    "min_reference": 200,
+    "random_state": 0,
+    "scaler": "robust",
+    "threshold_percentile": 99.5,
+    "use_battery": false,
+    "use_temperature": false,
+    "window_seconds": 180.0
+  },
+  "max_scale_ratio": 2.0,
+  "package_version": "0.2.0",
+  "rules": {
+    "type1_voltage_below_mV": 1200.0,
+    "type2_current_below_mA": 50.0,
+    "type2_min_consecutive": 3,
+    "type2_voltage_high_mV": 3000.0,
+    "type2_voltage_low_mV": 2000.0
+  }
+}

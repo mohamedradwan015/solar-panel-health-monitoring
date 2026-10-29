@@ -1,0 +1,14 @@
+# Render Blueprint. Untested here: no deployment was performed from the development sandbox.
+services:
+  - type: web
+    name: solar-panel-health-monitoring
+    runtime: python
+    plan: starter            # the free 512 MB plan can run out of memory on large uploads; see docs/DEPLOYMENT.md
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn wsgi:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 300 --max-requests 200
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: SPM_MAX_UPLOAD_MB
+        value: "25"

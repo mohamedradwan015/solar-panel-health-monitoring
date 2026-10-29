@@ -1,0 +1,9 @@
+{
+  "available": true,
+  "gate_sib_i_mA": 100.0,
+  "gate_sun_V": 4.0,
+  "healthy_median": 0.6112284994068802,
+  "healthy_p05": 0.042725247320503534,
+  "healthy_p95": 1.3286507693693976,
+  "n": 97525
+}

@@ -1,0 +1,72 @@
+{
+  "config": {
+    "current_softening_mA": 4.66,
+    "feature_set": "abs",
+    "k": 20,
+    "level": "channel",
+    "max_reference": null,
+    "min_reference": 200,
+    "random_state": 0,
+    "scaler": "robust",
+    "threshold_percentile": 99.5,
+    "use_battery": false,
+    "use_temperature": false,
+    "window_seconds": 180.0
+  },
+  "exclusions": {
+    "channel_exclusion_rows_masked": 13872,
+    "rows_excluded_allzero_glitch": 0,
+    "rows_excluded_non_flight": 5560,
+    "rows_excluded_rule_anomaly": 119
+  },
+  "feature_set": "abs",
+  "files": {
+    "config.json": {
+      "bytes": 591,
+      "sha256": "97fac4a9e7bc69297769ca2a3e079bd92790d9f29e486fc82c388270b697a317"
+    },
+    "feature_schema.json": {
+      "bytes": 882,
+      "sha256": "7d6624cd77dc7ec3f59721500df71bd35d4c79f08cb1a8105bd71c33807445cc"
+    },
+    "model_arrays.npz": {
+      "bytes": 2462394,
+      "sha256": "df0e9689cf56def5d1c06e162556f0d15117ee821119fc0ae616419b35d574cc"
+    },
+    "provenance.json": {
+      "bytes": 2071,
+      "sha256": "92fee50076137e13e0c6ffc6ff2ff7d6dd93ab194b0fdd676b0793c0ea06f711"
+    },
+    "severity_baseline.json": {
+      "bytes": 201,
+      "sha256": "bf2a4f494580dba5a309d568527bb86cf94bac9117791219194e2536b9e80702"
+    },
+    "thresholds.json": {
+      "bytes": 292,
+      "sha256": "b66586b3c245c3d9f8821d7de09f0522b18133ba66f84b4979649aa88af07c15"
+    }
+  },
+  "format_note": "JSON + NumPy .npz (allow_pickle=False). No pickled Python objects.",
+  "generated_utc": "2026-10-25T10:08:52Z",
+  "k": 20,
+  "ledger_sha256": "9560b1d7c0ac4807c9cb8fad39ce47bd800bae60bed8807c1d868b8448209018",
+  "level": "channel",
+  "n_training_sessions": 48,
+  "package_version": "0.2.0",
+  "reference_rows": 153834,
+  "software": {
+    "numpy": "2.4.4",
+    "pandas": "3.0.2",
+    "python": "3.12.3",
+    "scikit-learn": "1.8.0",
+    "scipy": "1.17.1"
+  },
+  "threshold": 0.025708564284459154,
+  "threshold_method": "percentile 99.5 of out-of-session mean-kNN-distance (k=20) over trusted-normal reference; leave-one-session-out folds (5 contiguous blocks if <4 sessions)",
+  "training_sources_by_satellite": {
+    "NEPALISAT": 13223,
+    "RAAVANA": 8628,
+    "TSURU": 118921,
+    "UGUISU": 13062
+  }
+}

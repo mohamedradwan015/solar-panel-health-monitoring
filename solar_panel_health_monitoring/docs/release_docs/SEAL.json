@@ -1,0 +1,12 @@
+{
+ "seed": 9001,
+ "days": 7,
+ "sealed_utc": "2026-10-25T09:59:38.247931+00:00",
+ "sha256": {
+  "syn7_holdout_telemetry.csv": "9d3306debdd969a5a38f7d66ee3d825594f56a77c44a1a73deb0f83d2a6dff8f",
+  "syn7_holdout_truth_DO_NOT_OPEN_BEFORE_FREEZE.csv": "801dab5a50a53efe422d8d35341f119d869970f04a2aae08f4fb7a44bacb9e1d",
+  "syn7_holdout_events_DO_NOT_OPEN_BEFORE_FREEZE.csv": "903a3d285bc0040d4c12f4815abae99b78ab64434a2b38ed4d33c656e3256579",
+  "syn7_generator_params.json": "9df36a8b7f3070809e9dc83d5b5d7a868ffe35a2384eaa074c399622e7afe854"
+ },
+ "note": "Generated BEFORE any candidate was evaluated. NOT EGS-7 (EGS-7 files do not exist on this filesystem)."
+}

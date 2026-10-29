@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solar Panel Health Monitoring</title>
+<meta name="description" content="Satellite telemetry analysis and anomaly detection for solar panels.">
+<meta name="theme-color" content="#080F1D">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111F33'/%3E%3Cpath d='M5 12h7v8H5zM20 12h7v8h-7z' fill='%232F8CFF'/%3E%3Crect x='12' y='10' width='8' height='12' rx='1.5' fill='%2339D5E8'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap top-inner">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="40" height="40"><rect x="0.5" y="0.5" width="39" height="39" rx="9" fill="#111F33" stroke="#25395B"/>
+          <g fill="#2F8CFF"><rect x="5" y="14" width="9" height="12" rx="1"/><rect x="26" y="14" width="9" height="12" rx="1"/></g>
+          <g stroke="#0D1728" stroke-width="1"><path d="M9.5 14v12M5 20h9M30.5 14v12M26 20h9"/></g>
+          <rect x="15.5" y="11" width="9" height="18" rx="2" fill="#39D5E8"/><path d="M14 20h1.5M24.5 20H26" stroke="#7AA7FF" stroke-width="1.5"/>
+          <path d="M20 11V7" stroke="#91A3BC" stroke-width="1.5" stroke-linecap="round"/><circle cx="20" cy="6" r="1.4" fill="#91A3BC"/></svg>
+      </span>
+      <div>
+        <h1>Solar Panel Health Monitoring</h1>
+        <p class="sub">Satellite Telemetry Analysis &amp; Anomaly Detection</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span id="modelChip" class="chip chip-gray" role="status"><span class="dot"></span><span id="modelChipText">Checking model</span></span>
+      <button id="aboutBtn" class="btn btn-quiet" type="button" aria-controls="aboutPanel" aria-expanded="false">About the model</button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="wrap" tabindex="-1">
+  <div id="banner" class="banner banner-bad" role="alert" hidden></div>
+
+  <section id="aboutPanel" class="card about" hidden aria-label="About the model">
+    <div class="about-grid">
+      <div>
+        <h2>What the model does</h2>
+        <p>Each panel reading (voltage and current) is compared with 153,834 readings from normal operation on four BIRDS satellites. The <strong>score</strong> is the mean distance to the 20 most similar normal readings. A reading is <strong>flagged</strong> when its score is above a fixed threshold.</p>
+        <p>The threshold is the 99.5th percentile of out-of-session reference scores, so about 0.5&nbsp;% of healthy readings are flagged by design. The score is a distance, not a probability, and the flagged share is not a damage percentage.</p>
+        <h2>What it cannot do</h2>
+        <ul class="plain">
+          <li>It does not confirm physical faults or locate failed cells.</li>
+          <li>Subtle faults (partial degradation, stuck cells, intermittent bursts) are mostly missed.</li>
+          <li>Its evidence is synthetic or rule-derived; no verified real fault labels were available.</li>
+          <li>The baseline expects BIRDS-like voltage and current scales. Other hardware may need a new baseline, and the app refuses data outside that scale.</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Loaded model</h2>
+        <dl id="modelFacts" class="facts"></dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= Upload ============================= -->
+  <section class="card upload" aria-labelledby="uploadTitle">
+    <div class="card-head">
+      <h2 id="uploadTitle">Upload telemetry</h2>
+      <span id="runChip" class="chip chip-gray" role="status"><span class="dot"></span><span id="runChipText">Waiting for a file</span></span>
+    </div>
+    <div class="upload-grid">
+      <div>
+        <div id="drop" class="drop" tabindex="0" role="button" aria-label="Choose a telemetry file or drop it here">
+          <svg viewBox="0 0 48 48" width="44" height="44" aria-hidden="true"><path d="M24 33V13m0 0-8 8m8-8 8 8" fill="none" stroke="#39D5E8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 30v6a3 3 0 0 0 3 3h24a3 3 0 0 0 3-3v-6" fill="none" stroke="#2F8CFF" stroke-width="2.4" stroke-linecap="round"/></svg>
+          <p class="drop-main">Drop a telemetry file here</p>
+          <p class="drop-sub">or <span class="link">browse your computer</span></p>
+          <p class="drop-types">CSV or Excel (.xlsx), up to <span id="maxMb">25</span> MB</p>
+          <input id="file" type="file" accept=".csv,.xlsx,.xlsm" hidden>
+        </div>
+        <div class="sample-row">
+          <button id="sampleBtn" class="btn btn-ghost" type="button">Use the bundled synthetic sample</button>
+          <span class="muted small">2.3 days, 4 panels, injected faults. Not real satellite data.</span>
+        </div>
+      </div>
+      <div id="checkPanel" class="check" aria-live="polite">
+        <div id="checkEmpty">
+          <h3>Accepted layouts</h3>
+          <ul class="plain small">
+            <li><strong>BIRDS workbook:</strong> one sheet per session with <code>Time stamp</code>, <code>Vpy (mV)</code>, <code>Ipy (mA)</code> columns.</li>
+            <li><strong>Flat file:</strong> <code>elapsed_seconds</code>, <code>P1_voltage_V</code>, <code>P1_current_A</code> ... one column pair per panel.</li>
+            <li><strong>Long file:</strong> one reading per row with <code>panel_id</code>, time, voltage and current columns.</li>
+          </ul>
+          <p class="muted small">Any number of panels is accepted. Units are read from the column names and converted once; they are never guessed.</p>
+        </div>
+        <div id="checkBody" hidden></div>
+      </div>
+    </div>
+    <div id="runBar" class="runbar" hidden>
+      <div class="runbar-left">
+        <label class="field"><span>Satellite label (optional)</span><input id="satLabel" type="text" maxlength="40" autocomplete="off" placeholder="e.g. TSURU"></label>
+        <details class="adv"><summary>Column mapping (advanced)</summary>
+          <p class="small muted">Only for files with unusual headers. A JSON object keyed by column name, for example <code>{"ts":"time","col_a":{"measure":"voltage","channel":"PANEL_A","unit":"mV"}}</code>.</p>
+          <textarea id="mapText" rows="4" spellcheck="false" aria-label="Column mapping JSON"></textarea>
+          <button id="mapApply" class="btn btn-ghost" type="button">Check with this mapping</button>
+        </details>
+      </div>
+      <div class="runbar-right">
+        <button id="runBtn" class="btn btn-primary" type="button" disabled>Run analysis</button>
+      </div>
+    </div>
+    <div id="progress" class="progress" hidden>
+      <div class="bar"><div id="barFill" class="bar-fill"></div></div>
+      <p id="progressText" class="small muted" role="status"></p>
+    </div>
+    <div id="runError" class="banner banner-bad" role="alert" hidden></div>
+  </section>
+
+  <!-- ============================= Results ============================= -->
+  <section id="results" hidden aria-labelledby="resultsTitle">
+    <div class="results-head">
+      <h2 id="resultsTitle" tabindex="-1">Analysis results</h2>
+      <p id="resultsMeta" class="muted small"></p>
+    </div>
+
+    <div id="overview" class="overview" role="list" aria-label="Analysis overview"></div>
+
+    <div class="section-bar"><h3 id="panelsTitle">Panels</h3><div id="sessionWrap" class="session-pick" hidden><label for="sessionSel">Session</label><select id="sessionSel"></select></div></div>
+    <div id="panelCards" class="panel-cards"></div>
+
+    <section class="card chart-card" aria-labelledby="chartTitle">
+      <div class="chart-head">
+        <h3 id="chartTitle">Panel Voltages (Red Band = Rows Flagged on the Faulty Panel)</h3>
+        <div class="chart-tools">
+          <div class="seg" role="group" aria-label="Flagged intervals shown (display only)">
+            <button type="button" data-minrun="1" class="on" aria-pressed="true">All flags</button>
+            <button type="button" data-minrun="3" aria-pressed="false">Runs of 3+</button>
+            <button type="button" data-minrun="10" aria-pressed="false">Runs of 10+</button>
+          </div>
+          <div class="seg" role="group" aria-label="Zoom">
+            <button type="button" id="zIn" aria-label="Zoom in" title="Zoom in">+</button>
+            <button type="button" id="zOut" aria-label="Zoom out" title="Zoom out">&minus;</button>
+            <button type="button" id="zReset" title="Show the whole session">Reset</button>
+          </div>
+        </div>
+      </div>
+      <div id="legend" class="legend" role="group" aria-label="Show or hide panels"></div>
+      <div id="chartBox" class="chartbox">
+        <canvas id="cv" tabindex="0" aria-label="Voltage chart. Use arrow keys to move the cursor, plus and minus to zoom, Home to reset." role="img"></canvas>
+        <canvas id="cvLane" aria-hidden="true"></canvas>
+        <div id="tip" class="tip" hidden></div>
+        <div id="chartMsg" class="chart-msg" hidden></div>
+      </div>
+      <p id="chartStatus" class="sr-only" aria-live="polite"></p>
+      <div class="chart-foot">
+        <p id="chartNote" class="small muted"></p>
+        <p class="small muted">Red bands mark readings the model flagged as statistically unusual. They are <strong>not</strong> confirmed physical damage. Drag across the chart to zoom, double-click to reset. The strip below shows which panel was flagged.</p>
+      </div>
+    </section>
+
+    <section class="card tabs-card" aria-label="Detailed results">
+      <div class="tabs" role="tablist">
+        <button role="tab" id="tabPanels" aria-selected="true" aria-controls="paneP" type="button">Panel summary</button>
+        <button role="tab" id="tabIv" aria-selected="false" aria-controls="paneI" type="button" tabindex="-1">Flagged intervals</button>
+        <button role="tab" id="tabRd" aria-selected="false" aria-controls="paneR" type="button" tabindex="-1">Flagged readings</button>
+      </div>
+      <div id="paneP" role="tabpanel" aria-labelledby="tabPanels">
+        <div class="tbl-tools"><label class="field inline"><span>Status</span><select id="fStatus"><option value="">All</option></select></label>
+          <label class="field inline"><span>Find panel</span><input id="fPanel" type="search" placeholder="Panel name"></label></div>
+        <div class="tbl-wrap"><table id="tblPanels" class="tbl"></table></div>
+      </div>
+      <div id="paneI" role="tabpanel" aria-labelledby="tabIv" hidden>
+        <div class="tbl-tools"><label class="field inline"><span>Panel</span><select id="ivPanel"><option value="">All</option></select></label>
+          <span class="muted small" id="ivInfo"></span></div>
+        <div class="tbl-wrap"><table id="tblIv" class="tbl"></table></div>
+      </div>
+      <div id="paneR" role="tabpanel" aria-labelledby="tabRd" hidden>
+        <div class="tbl-tools"><label class="field inline"><span>Panel</span><select id="rdPanel"><option value="">All</option></select></label>
+          <span class="muted small" id="rdInfo"></span>
+          <span class="pager"><button id="rdPrev" class="btn btn-ghost" type="button">Previous</button><button id="rdNext" class="btn btn-ghost" type="button">Next</button></span></div>
+        <div class="tbl-wrap"><table id="tblRd" class="tbl"></table></div>
+      </div>
+    </section>
+
+    <section class="card downloads" aria-labelledby="dlTitle">
+      <h3 id="dlTitle">Downloads</h3>
+      <div class="dl-row">
+        <a id="dlPred" class="btn btn-ghost" href="#" download>Predictions (CSV)</a>
+        <a id="dlIv" class="btn btn-ghost" href="#" download>Flagged intervals (CSV)</a>
+        <a id="dlPng" class="btn btn-ghost" href="#" download>Voltage chart (PNG)</a>
+        <a id="dlPdf" class="btn btn-ghost" href="#" download>Report (PDF)</a>
+        <button id="delBtn" class="btn btn-quiet" type="button">Delete my uploaded data</button>
+      </div>
+      <p class="small muted">The CSV holds every model output for every reading: score, threshold, flag and diagnosis. The chart download follows the selected session and interval filter. Uploaded data is deleted automatically after <span id="ttl">2</span> hours.</p>
+    </section>
+
+    <section class="card notes" aria-labelledby="readTitle">
+      <h3 id="readTitle">How to read these results</h3>
+      <div class="notes-grid">
+        <div><h4>Model outputs</h4>
+          <p class="small">Score, threshold and the flag come straight from the supplied model. Diagnosis labels (for example <em>suspected low output</em>) are the model package's cautious wording and never confirm a fault.</p></div>
+        <div><h4>Derived by this app</h4>
+          <p class="small">Counts, percentages, intervals (consecutive flagged readings) and the status badge are arithmetic on those outputs. The badge is a convenience: <em>Within expected alert rate</em> means at most <span id="trA">2</span>&nbsp;% flagged and no persistent run, <em>High alert rate</em> means <span id="trB">10</span>&nbsp;% or more, and <em>Review</em> is everything between. It is not a verified fault class.</p></div>
+        <div><h4>Before you rely on it</h4>
+          <p class="small">The detector's measured performance comes from synthetic and rule-derived tests. Treat flags as a prompt to look at the telemetry, not as a diagnosis.</p></div>
+      </div>
+    </section>
+  </section>
+</main>
+
+<footer class="wrap foot"><p class="small muted">Solar Panel Health Monitoring v<span id="ver">1.0</span>. Analysis of uploaded files only; this site does not receive live satellite telemetry.</p></footer>
+
+<script src="/static/js/chart.js"></script>
+<script src="/static/js/app.js"></script>
+</body>
+</html>

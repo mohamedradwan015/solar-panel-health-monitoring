@@ -1,0 +1,19 @@
+{
+  "diagnosis_definitions": {
+    "data_quality_issue": "all channel voltages are exactly 0 at the same instant (readout/telemetry glitch pattern) or inputs missing",
+    "normal_like": "score <= threshold",
+    "persistent_channel_deviation": "flagged in >= persistence_fraction of the last window_seconds of this channel (causal)",
+    "statistical_anomaly": "score > threshold; no dominant output-level feature or direction",
+    "suspected_high_output": "flagged and the dominant deviating output feature is ABOVE its neighbours",
+    "suspected_low_output": "flagged and the dominant deviating output feature is BELOW its neighbours (V, I or relative-to-sibling)",
+    "unknown_or_insufficient_evidence": "no score (missing voltage) -> not evaluated"
+  },
+  "feature_names": [
+    "V_V",
+    "I_mA"
+  ],
+  "signature": {
+    "feature_set": "abs",
+    "level": "channel"
+  }
+}

@@ -1,0 +1,23 @@
+{
+ "predictions_sha256": "cdf3fb68ea91ec01062bfbdfea44c5a30db0786506884187d4b8f7c70a09592f",
+ "produced_utc": "2026-10-26T09:21:15Z",
+ "cli_seconds": 7.7,
+ "compat": {
+  "rows": 60480,
+  "panels": [
+   "P1",
+   "P2",
+   "P3",
+   "P4"
+  ],
+  "unit_conversions": "V->mV x1000, A->mA x1000",
+  "cadence_median_s": 10.0,
+  "cadence_min_s": 10.0,
+  "cadence_max_s": 10.0,
+  "duplicate_timestamps": 0,
+  "missing_V_cells": 180,
+  "missing_I_cells": 180,
+  "counterfactual_or_truth_columns_in_telemetry": [],
+  "unmapped_columns": []
+ }
+}

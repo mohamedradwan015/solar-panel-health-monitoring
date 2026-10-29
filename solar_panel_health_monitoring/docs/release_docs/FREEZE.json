@@ -1,0 +1,8 @@
+{
+ "frozen_utc": "2026-10-26T09:20:40Z",
+ "primary_model": "abs",
+ "status": "SELECTED (all predeclared eligibility criteria met)",
+ "manifest_sha256": "f9c6c2c94b41966591c248cb2ced1244e14b346d165453e74dd0a3cd6c2a8502",
+ "sealed_telemetry_sha256": "9d3306debdd969a5a38f7d66ee3d825594f56a77c44a1a73deb0f83d2a6dff8f",
+ "statement": "Model frozen BEFORE the sealed holdout truth was opened or any holdout prediction was produced."
+}
